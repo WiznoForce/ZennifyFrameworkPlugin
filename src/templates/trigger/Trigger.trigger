@@ -1,0 +1,3 @@
+trigger TRIGGER_FILENAME on TRIGGER_SOBJECT (TRIGGER_EVENTS) {
+	ZennSObjectDomain.runTriggerHandler(TRIGGER_HANDLER_FILENAME.class);
+}

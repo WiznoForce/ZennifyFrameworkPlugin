@@ -1,0 +1,7 @@
+{
+  "commandDescription": "Generate Apex Trigger for use with Zennify Framework",
+  "nameFlagDescription": "API Name of SObject to create Trigger For",
+  "eventFlagDescription": "Events the Trigger should fire for. (i.e. BEFORE_INSERT,BEFORE_UPDATE)",
+  "notriggerFlagDescription": "Set this flag if you want to exclude creating the Trigger",
+  "nohandlerFlagDescription": "Set this flag if you want to exclude creating the Handler Class"
+}
