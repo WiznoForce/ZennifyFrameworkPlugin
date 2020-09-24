@@ -1,6 +1,6 @@
 import { AnyJson } from "@salesforce/ts-types";
 
-interface CustomObject {
+/* interface CustomObject {
   fullName: string;
   label: string;
   pluralLabel: string;
@@ -16,7 +16,7 @@ interface CustomField {
   label: string;
   TableEnumOrId: string;
   length: number;
-}
+} */
 
 /* interface CustomObject {
   Description?: string;
@@ -31,7 +31,7 @@ interface CustomField {
   TableEnumOrId?: string;
 } */
 
-interface CustomFieldMetadata {
+/* interface CustomFieldMetadata {
   caseSensitive?: boolean;
   defaultValue?: string;
   //deleteConstraint?: DeleteConstraint; //{SetNull,Restrict,Cascade}
@@ -41,7 +41,7 @@ interface CustomFieldMetadata {
   required?: boolean;
   type?: string;
   unique?: string;
-}
+} */
 
 class Tooling {
   private connection;
@@ -50,7 +50,7 @@ class Tooling {
     this.connection = connection;
   }
 
-  public async createObject(objectDefinition: CustomObject) {
+  /* public async createObject(objectDefinition: CustomObject) {
     return await this.connection.metadata.create("CustomObject", [
       objectDefinition,
     ]);
@@ -60,7 +60,7 @@ class Tooling {
     return await this.connection.metadata.create("CustomField", [
       fieldDefinition,
     ]);
-  }
+  } */
 
   public async createClass(body: string): Promise<AnyJson> {
     let config = {
@@ -87,4 +87,5 @@ class Tooling {
   }
 }
 
-export { Tooling, CustomObject, CustomField, CustomFieldMetadata };
+//export { Tooling, CustomObject, CustomField, CustomFieldMetadata };
+export { Tooling };

@@ -6,7 +6,7 @@ import * as path from "path";
 // import { promises as fs } from "fs";
 // import { constants as fsC } from "fs";
 
-import { Tooling, CustomObject, CustomField } from "../../../helpers/tooling";
+// import { Tooling, CustomObject, CustomField } from "../../../helpers/tooling";
 // import { exec } from "child_process";
 
 Messages.importMessagesDirectory(__dirname);
@@ -33,16 +33,16 @@ export default class Create extends SfdxCommand {
   // Set this to true if your command requires a project workspace; 'requiresProject' is false by default
   protected static requiresProject = false;
 
-  private connection;
-  private toolingHelper: Tooling;
+  // private connection;
+  // private toolingHelper: Tooling;
 
   public async run(): Promise<AnyJson> {
-    this.connection = this.org.getConnection();
-    this.toolingHelper = new Tooling(this.connection);
+    // this.connection = this.org.getConnection();
+    //this.toolingHelper = new Tooling(this.connection);
 
     this.project = await SfdxProject.resolve();
 
-    let objectDefinition: CustomObject = {
+    /* let objectDefinition: CustomObject = {
       description: "Test custom metadata type",
       fullName: "Test2__mdt",
       label: "Test2",
@@ -50,9 +50,9 @@ export default class Create extends SfdxCommand {
     } as CustomObject;
 
     if (objectDefinition) {
-    }
+    } */
 
-    let fieldDefinition1: CustomField = {
+    /* let fieldDefinition1: CustomField = {
       type: "Text3",
       label: "Text3 Example",
       fullName: "Test2__mdt.Text_Example3__c",
@@ -64,18 +64,18 @@ export default class Create extends SfdxCommand {
       label: "Text2 Example",
       fullName: "Test2__mdt.Text_Example2__c",
       length: 80,
-    } as CustomField;
+    } as CustomField; */
 
-    let defs: Array<CustomField> = [];
+    /* let defs: Array<CustomField> = [];
     defs.push(fieldDefinition1);
-    defs.push(fieldDefinition2);
+    defs.push(fieldDefinition2); */
 
     //let r = await this.toolingHelper.createObject(objectDefinition);
     //console.log(r);
-    let t = await this.toolingHelper.createField(fieldDefinition1);
+    /* let t = await this.toolingHelper.createField(fieldDefinition1);
     console.log(t);
     let t2 = await this.toolingHelper.createField(fieldDefinition2);
-    console.log(t2);
+    console.log(t2); */
     return { x: "something" };
   }
 }
