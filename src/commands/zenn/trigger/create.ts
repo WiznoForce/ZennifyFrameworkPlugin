@@ -21,8 +21,8 @@ const TRIGGER_NAME_SUFFIX = "Trigger";
 const TRIGGER_HANDLER_NAME_SUFFIX = "TriggerHandler";
 
 interface CreateResponse {
-  ApexTrigger: any;
-  ApexClass: any;
+  ApexTrigger?: any;
+  ApexClass?: any;
 }
 
 export default class Create extends SfdxCommand {
@@ -124,7 +124,7 @@ export default class Create extends SfdxCommand {
     const triggerBody: string = await this.generateTriggerFromTemplate();
     const triggerHandlerBody: string = await this.generateTriggerHandlerFromTemplate();
 
-    let responseWrapper: CreateResponse = {} as CreateResponse;
+    let responseWrapper: CreateResponse = {};
 
     if (!doesHandlerExist && this.isCreatingTriggerHandler) {
       const handlerResponse = await this.createApex(

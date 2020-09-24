@@ -4,7 +4,7 @@ interface CustomObject {
   fullName: string;
   label: string;
   pluralLabel: string;
-  nameField: CustomField;
+  nameField?: CustomField;
   description?: string;
   deploymentStatus?: string;
   sharingModel?: string;
@@ -21,6 +21,13 @@ interface CustomField {
   visibleLines?: number;
   startingNumber?: number;
   displayFormat?: string;
+  inlineHelpText?: string;
+  defaultValue?: string;
+}
+
+interface MetadataExistsResult {
+  apiName: string;
+  exists: boolean;
 }
 
 class Metadata {
@@ -48,6 +55,27 @@ class Metadata {
       fieldDefinitions
     );
   }
+
+  public async exists(
+    metadataType: string,
+    metadataApiName: string
+  ): Promise<boolean> {
+    let metadataResult = await this.connection.metadata.read(metadataType, [
+      metadataApiName,
+    ]);
+
+    //console.log(metadataResult);
+
+    return !this.isEmpty(metadataResult);
+  }
+
+  private isEmpty(objectToTest): boolean {
+    if (Object.keys(objectToTest).length === 0) {
+      return true;
+    }
+
+    return false;
+  }
 }
 
-export { Metadata, CustomObject, CustomField };
+export { Metadata, CustomObject, CustomField, MetadataExistsResult };

@@ -1,9 +1,13 @@
 import { SfdxCommand } from "@salesforce/command";
 import { Messages, SfdxProject } from "@salesforce/core";
+import { exec } from "child_process";
+import * as path from "path";
 // import { AnyJson } from "@salesforce/ts-types";
 
 // import { Tooling } from "../../../helpers/tooling";
 import { Metadata, CustomObject, CustomField } from "../../../helpers/metadata";
+
+const fs = require("fs");
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages(
@@ -11,8 +15,8 @@ const messages = Messages.loadMessages(
   "framework.deploy"
 );
 
-//TODO: Deploy Custom Metadata Type
-//TODO: Deploy Logging Custom Object
+const __basedir = path.join(__dirname, "../../../../");
+
 //TODO: Deploy ZennQueryBuilder
 //TODO: Deploy ZennSObjectDomain
 //TODO: Deploy ZennUnitTest
@@ -47,12 +51,50 @@ export default class Deploy extends SfdxCommand {
 
     this.project = await SfdxProject.resolve();
 
-    console.log("Creating Logging Object");
-    await this.createLoggingObject();
+    if (1 > 1) {
+      await this.deployLoggingObject();
+      await this.deployTriggerCustomMetadataObject();
+    }
+    this.prototypeExec();
   }
 
-  private async createLoggingObject() {
-    const loggingObjectApiName: string = "ZennLog__c";
+  private async prototypeExec() {
+    const repo = "git@github.com:WiznoForce/ZEAF.git";
+
+    const frameworkDirectory = path.join(__basedir, "src", "git");
+    const frameworkGitFolderPath = path.join(
+      frameworkDirectory,
+      "ZennifyFramework2"
+    );
+
+    const dir = await fs.promises.opendir(frameworkGitFolderPath);
+    console.log(dir);
+
+    console.log("git folder", frameworkGitFolderPath);
+
+    exec(
+      `git clone ${repo} ./ZennifyFramework`,
+      {
+        cwd: frameworkDirectory,
+      },
+      (err, stdout, stderr) => {
+        console.log(err);
+        console.log(stdout);
+        console.log(stderr);
+      }
+    );
+  }
+
+  private async deployLoggingObject() {
+    const loggingObjectApiName: string = "Wizno__ZennLog__c";
+
+    const doesObjectExist: boolean = await this.checkIfObjectExists(
+      loggingObjectApiName
+    );
+
+    if (doesObjectExist) {
+      return;
+    }
 
     const loggingObject: CustomObject = {
       fullName: loggingObjectApiName,
@@ -126,5 +168,113 @@ export default class Deploy extends SfdxCommand {
       loggingObjectFields
     );
     console.log(fieldResponse);
+  }
+
+  private async deployTriggerCustomMetadataObject() {
+    const customMetadataTypeName: string = "TriggerConfiguration__mdt";
+
+    const doesObjectExist: boolean = await this.checkIfObjectExists(
+      customMetadataTypeName
+    );
+
+    if (doesObjectExist) {
+      return;
+    }
+
+    const metadataObject: CustomObject = {
+      fullName: customMetadataTypeName,
+      label: "Trigger Configuration",
+      pluralLabel: "Trigger Configurations",
+      description:
+        "Stores settings for Triggers, allowing quick & painless disabling of entire triggers or specific events.",
+    };
+
+    const metadataObjectFields: CustomField[] = [
+      {
+        fullName: `${customMetadataTypeName}.IsActive__c`,
+        type: "Checkbox",
+        label: "Active",
+        inlineHelpText: "Is the Trigger Active?",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.BeforeInsert__c`,
+        type: "Checkbox",
+        label: "Before Insert",
+        inlineHelpText: "Enable Before Insert Event",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.AfterInsert__c`,
+        type: "Checkbox",
+        label: "After Insert",
+        inlineHelpText: "Enable After Insert Event",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.BeforeUpdate__c`,
+        type: "Checkbox",
+        label: "Before Update",
+        inlineHelpText: "Enable Before Update Event",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.AfterUpdate__c`,
+        type: "Checkbox",
+        label: "After Update",
+        inlineHelpText: "Enable After Update Event",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.BeforeDelete__c`,
+        type: "Checkbox",
+        label: "Before Delete",
+        inlineHelpText: "Enable Before Delete Event",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.AfterDelete__c`,
+        type: "Checkbox",
+        label: "After Delete",
+        inlineHelpText: "Enable After Delete Event",
+        defaultValue: "true",
+      },
+      {
+        fullName: `${customMetadataTypeName}.AfterUndelete__c`,
+        type: "Checkbox",
+        label: "After Undelete",
+        inlineHelpText: "Enable After Undelete Event",
+        defaultValue: "true",
+      },
+    ];
+
+    const objectResponse = await this.metadataHelper.createObject(
+      metadataObject
+    );
+    console.log(objectResponse);
+
+    const fieldResponse = await this.metadataHelper.createFields(
+      metadataObjectFields
+    );
+    console.log(fieldResponse);
+  }
+
+  private async checkIfObjectExists(sObjectApiName: string) {
+    this.ux.log(`Preparing to Deploy Custom Object: ${sObjectApiName}`);
+
+    this.ux.startSpinner(`Checking if custom object exists.`);
+    const doesObjectExist: boolean = await this.metadataHelper.exists(
+      "CustomObject",
+      sObjectApiName
+    );
+    this.ux.stopSpinner("Parsing metadata results");
+
+    if (doesObjectExist) {
+      this.ux.log(
+        `${sObjectApiName} already exists in current org. Moving on!`
+      );
+    }
+
+    return doesObjectExist;
   }
 }
